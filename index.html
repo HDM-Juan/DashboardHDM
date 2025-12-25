@@ -852,10 +852,13 @@
                 return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
             }
             
-            // Formato dd/mm/yyyy - try this first as it's most common
-            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+            // Formato dd/mm/yyyy or mm/dd/yyyy - need to disambiguate
+            const slashFormatRegex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+            if (slashFormatRegex.test(dateStr)) {
                 const parts = dateStr.split('/');
-                // Check if it looks like dd/mm/yyyy (day > 12 or month > 12)
+                // Heuristic: if first part > 12, it must be day (dd/mm/yyyy)
+                // Otherwise, if second part > 12, it must be month in mm/dd/yyyy format
+                // If both <= 12, assume dd/mm/yyyy as it's more common in Spanish locales
                 if (parseInt(parts[0]) > 12 || parseInt(parts[1]) <= 12) {
                     const [day, month, year] = parts;
                     const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
@@ -1128,9 +1131,10 @@
                 const gastosCache = {};
                 if (showGastos || showUtilidadAdmin) {
                     currentData.forEach(d => {
-                        const dayStart = new Date(d.fecha);
-                        const dayEnd = new Date(d.fecha);
-                        dayEnd.setHours(23, 59, 59, 999);
+                        const dayDate = parseDate(d.fecha);
+                        if (!dayDate) return;
+                        const dayStart = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), 0, 0, 0, 0);
+                        const dayEnd = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), 23, 59, 59, 999);
                         const dayEgresos = filterDataByPeriod(GLOBAL_DATA.egresos, dayStart, dayEnd);
                         gastosCache[d.fecha] = dayEgresos.filter(e => e.tipo === 'Gasto/Pago').reduce((s, e) => s + e.monto, 0);
                     });
