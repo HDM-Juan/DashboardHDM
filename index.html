@@ -699,22 +699,24 @@
                 const agregacionSelect = document.getElementById('filter-agregacion');
                 const currentValue = agregacionSelect.value;
                 
-                // Clear options
-                agregacionSelect.innerHTML = '';
-                
-                // Always available
-                agregacionSelect.innerHTML += '<option value="por-folio">Por Folio</option>';
-                agregacionSelect.innerHTML += '<option value="por-dia">Por Día</option>';
+                // Build options array
+                const options = [
+                    '<option value="por-folio">Por Folio</option>',
+                    '<option value="por-dia">Por Día</option>'
+                ];
                 
                 // Por Semana - solo para período mensual o mayor
                 if (['este-mes', 'elegir-mes', 'este-bimestre', 'este-trimestre', 'este-semestre', 'este-ano'].includes(periodo)) {
-                    agregacionSelect.innerHTML += '<option value="por-semana">Por Semana</option>';
+                    options.push('<option value="por-semana">Por Semana</option>');
                 }
                 
                 // Por Mes - solo para período de año
                 if (periodo === 'este-ano') {
-                    agregacionSelect.innerHTML += '<option value="por-mes">Por Mes</option>';
+                    options.push('<option value="por-mes">Por Mes</option>');
                 }
+                
+                // Set all options at once
+                agregacionSelect.innerHTML = options.join('');
                 
                 // Restore previous value if still available
                 if (Array.from(agregacionSelect.options).some(opt => opt.value === currentValue)) {
@@ -812,7 +814,7 @@
             if (isNaN(date)) {
                 // Try dd/mm/yyyy format
                 const parts = dateStr.split('/');
-                if (parts.length === 3) {
+                if (parts.length === 3 && parts.every(p => p && !isNaN(p) && p.length > 0)) {
                     date = new Date(parts[2], parts[1] - 1, parts[0]);
                 }
             }
