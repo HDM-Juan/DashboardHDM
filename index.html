@@ -689,8 +689,8 @@
                 renderVentas();
             });
             
-            // Add event listeners to all filter controls
-            ['filter-periodo', 'input-mes-ano', 'filter-agregacion'].forEach(id => {
+            // Add event listeners to other filter controls (not filter-periodo, already handled above)
+            ['input-mes-ano', 'filter-agregacion'].forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
                     element.addEventListener('change', renderVentas);
@@ -845,24 +845,26 @@
                 if (!isNaN(date)) return date;
             }
             
-            // Formato dd/mm/yyyy
-            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
-                const [day, month, year] = dateStr.split('/');
-                return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-            }
-            
-            // Formato mm/dd/yyyy (común en Google Sheets US)
-            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
-                const [month, day, year] = dateStr.split('/');
-                const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-                if (!isNaN(date) && date.getDate() === parseInt(day)) return date;
-            }
-            
             // Formato con hora: dd/mm/yyyy HH:MM:SS
             if (/^\d{1,2}\/\d{1,2}\/\d{4}\s/.test(dateStr)) {
                 const datePart = dateStr.split(' ')[0];
                 const [day, month, year] = datePart.split('/');
                 return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            }
+            
+            // Formato dd/mm/yyyy - try this first as it's most common
+            if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+                const parts = dateStr.split('/');
+                // Check if it looks like dd/mm/yyyy (day > 12 or month > 12)
+                if (parseInt(parts[0]) > 12 || parseInt(parts[1]) <= 12) {
+                    const [day, month, year] = parts;
+                    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                    if (!isNaN(date)) return date;
+                }
+                // Otherwise try mm/dd/yyyy format
+                const [month, day, year] = parts;
+                const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                if (!isNaN(date) && date.getDate() === parseInt(day)) return date;
             }
             
             // Intentar parseo nativo como último recurso
@@ -1122,22 +1124,30 @@
                 // Ordenar por fecha
                 currentData.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                 
+                // Pre-calculate gastos for each day to avoid redundant calculations
+                const gastosCache = {};
+                if (showGastos || showUtilidadAdmin) {
+                    currentData.forEach(d => {
+                        const dayStart = new Date(d.fecha);
+                        const dayEnd = new Date(d.fecha);
+                        dayEnd.setHours(23, 59, 59, 999);
+                        const dayEgresos = filterDataByPeriod(GLOBAL_DATA.egresos, dayStart, dayEnd);
+                        gastosCache[d.fecha] = dayEgresos.filter(e => e.tipo === 'Gasto/Pago').reduce((s, e) => s + e.monto, 0);
+                    });
+                }
+                
                 // Calcular máximo para escala
                 let maxVal = 0;
                 currentData.forEach(d => {
                     if (showIngreso) maxVal = Math.max(maxVal, d.ingreso);
                     if (showFlujo) maxVal = Math.max(maxVal, d.flujo);
                     if (showCostoVentas) maxVal = Math.max(maxVal, d.costo);
-                    if (showGastos) {
-                        // Para gastos, necesitamos calcular desde egresos del día
-                        const dayStart = new Date(d.fecha);
-                        const dayEnd = new Date(d.fecha);
-                        dayEnd.setHours(23, 59, 59, 999);
-                        const dayEgresos = filterDataByPeriod(GLOBAL_DATA.egresos, dayStart, dayEnd);
-                        const gastosDay = dayEgresos.filter(e => e.tipo === 'Gasto/Pago').reduce((s, e) => s + e.monto, 0);
-                        maxVal = Math.max(maxVal, gastosDay);
-                    }
+                    if (showGastos) maxVal = Math.max(maxVal, gastosCache[d.fecha] || 0);
                     if (showUtilidadBruta) maxVal = Math.max(maxVal, Math.abs(d.ingreso - d.costo));
+                    if (showUtilidadAdmin) {
+                        const utilAdmin = (d.ingreso - d.costo) - (gastosCache[d.fecha] || 0);
+                        maxVal = Math.max(maxVal, Math.abs(utilAdmin));
+                    }
                 });
                 maxVal = maxVal * 1.1 || 100;
                 
@@ -1159,11 +1169,7 @@
                         bars.push(`<div class="bg-blue-500 rounded-t" style="height:${h}%; min-height: 2px; width: 8px;" title="Costo: ${formatMoney(d.costo)}"></div>`);
                     }
                     if (showGastos) {
-                        const dayStart = new Date(d.fecha);
-                        const dayEnd = new Date(d.fecha);
-                        dayEnd.setHours(23, 59, 59, 999);
-                        const dayEgresos = filterDataByPeriod(GLOBAL_DATA.egresos, dayStart, dayEnd);
-                        const gastosDay = dayEgresos.filter(e => e.tipo === 'Gasto/Pago').reduce((s, e) => s + e.monto, 0);
+                        const gastosDay = gastosCache[d.fecha] || 0;
                         if (gastosDay > 0) {
                             const h = (gastosDay / maxVal) * 100;
                             bars.push(`<div class="bg-orange-500 rounded-t" style="height:${h}%; min-height: 2px; width: 8px;" title="Gastos: ${formatMoney(gastosDay)}"></div>`);
@@ -1178,12 +1184,7 @@
                         }
                     }
                     if (showUtilidadAdmin) {
-                        // Calcular utilidad administrativa aproximada por día
-                        const dayStart = new Date(d.fecha);
-                        const dayEnd = new Date(d.fecha);
-                        dayEnd.setHours(23, 59, 59, 999);
-                        const dayEgresos = filterDataByPeriod(GLOBAL_DATA.egresos, dayStart, dayEnd);
-                        const gastosDay = dayEgresos.filter(e => e.tipo === 'Gasto/Pago').reduce((s, e) => s + e.monto, 0);
+                        const gastosDay = gastosCache[d.fecha] || 0;
                         const utilAdmin = (d.ingreso - d.costo) - gastosDay;
                         if (utilAdmin !== 0) {
                             const h = (Math.abs(utilAdmin) / maxVal) * 100;
