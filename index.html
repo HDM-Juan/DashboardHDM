@@ -284,7 +284,7 @@
                             <thead>
                                 <tr>
                                     <th>📗 Folio Venta</th>
-                                    <th>📅Fecha Venta</th>
+                                    <th>📅 Fecha Venta</th>
                                     <th>Total Venta (Ingreso)</th>
                                     <th>Costo Calc. (Egresos)</th>
                                     <th>Utilidad Bruta</th>
@@ -354,7 +354,7 @@
                             <thead>
                                 <tr>
                                     <th>📘 Folio Recepción</th>
-                                    <th>📅Fecha Recepción</th>
+                                    <th>📅 Fecha Recepción</th>
                                     <th>1️⃣ Tipo Solicitud</th>
                                     <th>®️ Marca / 📱 Modelo</th>
                                     <th>⚙️ Tipo Servicio</th>
@@ -403,7 +403,7 @@
                             <thead>
                                 <tr>
                                     <th>📒 Folio Anticipo</th>
-                                    <th>📅Fecha Anticipo</th>
+                                    <th>📅 Fecha Anticipo</th>
                                     <th>Monto</th>
                                     <th>📘 Ref Recepción</th>
                                     <th>Dispositivo (Ref)</th>
@@ -686,10 +686,9 @@
             const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
             if (checkboxes.anterior) {
-                const prevEnd = new Date(startDate);
-                prevEnd.setDate(prevEnd.getDate() - 1);
-                const prevStart = new Date(prevEnd);
-                prevStart.setDate(prevStart.getDate() - diffDays + 1);
+                // More robust date calculation using milliseconds
+                const prevEnd = new Date(startDate.getTime() - 24 * 60 * 60 * 1000);
+                const prevStart = new Date(prevEnd.getTime() - (diffDays - 1) * 24 * 60 * 60 * 1000);
                 comparisons.push({ 
                     label: 'Período Anterior', 
                     startDate: prevStart, 
@@ -699,10 +698,9 @@
             }
 
             if (checkboxes.segundo) {
-                const prev2End = new Date(startDate);
-                prev2End.setDate(prev2End.getDate() - diffDays - 1);
-                const prev2Start = new Date(prev2End);
-                prev2Start.setDate(prev2Start.getDate() - diffDays + 1);
+                // More robust date calculation using milliseconds
+                const prev2End = new Date(startDate.getTime() - (diffDays + 1) * 24 * 60 * 60 * 1000);
+                const prev2Start = new Date(prev2End.getTime() - (diffDays - 1) * 24 * 60 * 60 * 1000);
                 comparisons.push({ 
                     label: '2do Período Anterior', 
                     startDate: prev2Start, 
@@ -744,7 +742,9 @@
                         key = date.toISOString().split('T')[0]; // YYYY-MM-DD
                         break;
                     case 'semana':
-                        // Obtener número de semana del año
+                        // Calculate week number using simple calendar weeks (not ISO 8601)
+                        // Week 1 starts on Jan 1st, regardless of day of week
+                        // This provides consistent grouping for business reporting
                         const firstDay = new Date(date.getFullYear(), 0, 1);
                         const dayOfYear = Math.floor((date - firstDay) / (24 * 60 * 60 * 1000));
                         const weekNum = Math.ceil((dayOfYear + firstDay.getDay() + 1) / 7);
@@ -940,11 +940,23 @@
                 const barsHTML = metricsToShow.map(m => {
                     const height = (Math.abs(m.value) / maxVal) * 100;
                     const isNegative = m.value < 0;
+                    
+                    // Get text color class based on metric color
+                    const textColorMap = {
+                        'emerald': 'green',
+                        'green': 'green',
+                        'red': 'red',
+                        'cyan': 'cyan',
+                        'blue': 'blue',
+                        'orange': 'orange'
+                    };
+                    const textColor = textColorMap[m.color] || 'gray';
+                    
                     return `
                         <div class="w-24 flex flex-col ${isNegative ? 'justify-start' : 'justify-end'} items-center group relative cursor-pointer">
                             <div class="w-full ${colorMap[m.color]} rounded-t-sm transition-all duration-1000 border-x border-t" style="height: ${height}%"></div>
                             <p class="mt-3 text-[9px] uppercase font-bold text-gray-400 tracking-widest text-center">${m.label}</p>
-                            <div class="absolute -bottom-8 text-xs font-bold text-${m.color === 'emerald' || m.color === 'green' ? 'green' : m.color === 'red' ? 'red' : 'gray'}-400">${formatMoney(m.value)}</div>
+                            <div class="absolute -bottom-8 text-xs font-bold text-${textColor}-400">${formatMoney(m.value)}</div>
                         </div>
                     `;
                 }).join('');
