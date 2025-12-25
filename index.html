@@ -178,28 +178,121 @@
             </div>
 
             <div id="content-ventas" class="collapsible-content border-t border-white/5">
-                <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-900/40 backdrop-blur-sm">
-                    <div class="space-y-1">
-                        <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Filtro: Validez✅</label>
-                        <select id="filter-ventas-validez" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
-                            <option value="ALL">Todos los Estados</option>
-                            <option value="Válido" selected>Válido</option>
-                            <option value="Cancelado">Cancelado</option>
-                        </select>
+                <div class="p-4 space-y-4 bg-slate-900/40 backdrop-blur-sm">
+                    <!-- Fila 1: Filtros Básicos -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Filtro: Validez✅</label>
+                            <select id="filter-ventas-validez" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
+                                <option value="ALL">Todos los Estados</option>
+                                <option value="Válido" selected>Válido</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Filtro: Con Servicio</label>
+                            <select class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
+                                <option>Todos</option>
+                                <option>Sí</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Costo Fijo Mensual ($)</label>
+                            <input type="number" id="fixed-costs-input" value="10000" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none font-mono">
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="window.updateDashboard()" class="w-full bg-gradient-to-r from-emerald-900 to-emerald-800 hover:from-emerald-800 hover:to-emerald-700 text-white border border-emerald-500/30 text-xs py-1.5 rounded uppercase font-bold tracking-wider shadow-lg transition-all">Actualizar Métricas</button>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Filtro: Con Servicio</label>
-                        <select class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
-                            <option>Todos</option>
-                            <option>Sí</option>
-                        </select>
+                    
+                    <!-- Fila 2: Controles Avanzados -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-emerald-500/20">
+                        <!-- Período a Analizar -->
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">📊 Período a Analizar</label>
+                            <select id="filter-periodo" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
+                                <option value="este-mes" selected>Este Mes</option>
+                                <option value="elegir-mes">Elegir Mes</option>
+                                <option value="este-bimestre">Este Bimestre</option>
+                                <option value="este-trimestre">Este Trimestre</option>
+                                <option value="este-semestre">Este Semestre</option>
+                                <option value="este-ano">Este Año</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Selector de Mes/Año (visible cuando Elegir Mes está seleccionado) -->
+                        <div id="selector-mes-ano" class="space-y-1 hidden">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">📅 Mes/Año</label>
+                            <input type="month" id="input-mes-ano" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
+                        </div>
+                        
+                        <!-- Agregación -->
+                        <div class="space-y-1">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">📈 Agregación</label>
+                            <select id="filter-agregacion" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none">
+                                <option value="por-folio" selected>Por Folio</option>
+                                <option value="por-dia">Por Día</option>
+                                <option value="por-semana">Por Semana</option>
+                                <option value="por-mes">Por Mes</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">Costo Fijo Mensual ($)</label>
-                        <input type="number" id="fixed-costs-input" value="10000" class="w-full bg-slate-800 text-xs border border-slate-600 rounded p-1.5 text-gray-300 focus:border-emerald-500 focus:ring-0 outline-none font-mono">
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="window.updateDashboard()" class="w-full bg-gradient-to-r from-emerald-900 to-emerald-800 hover:from-emerald-800 hover:to-emerald-700 text-white border border-emerald-500/30 text-xs py-1.5 rounded uppercase font-bold tracking-wider shadow-lg transition-all">Actualizar Métricas</button>
+                    
+                    <!-- Fila 3: Comparación y Métricas -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-emerald-500/20">
+                        <!-- Comparación -->
+                        <div class="space-y-2">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">🔄 Comparación</label>
+                            <div class="space-y-1.5">
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="comp-sin-comparar" class="comparison-checkbox w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500" checked>
+                                    <span>Sin Comparar</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="comp-periodo-anterior" class="comparison-checkbox w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Período Anterior</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="comp-segundo-anterior" class="comparison-checkbox w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Segundo Período Anterior</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="comp-ano-anterior" class="comparison-checkbox w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Mismo Período del Año Anterior</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Métricas a Mostrar -->
+                        <div class="space-y-2">
+                            <label class="text-[9px] text-emerald-500 font-bold uppercase tracking-wider">📊 Métricas a Mostrar</label>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="metric-ingreso" class="w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500" checked>
+                                    <span>Ingreso (Total Ventas)</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="metric-flujo" class="w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Flujo (Total Pagos)</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="metric-costo-ventas" class="w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Costo de Ventas</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="metric-gastos" class="w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Gastos (Gastos/Pagos)</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="metric-utilidad-bruta" class="w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500" checked>
+                                    <span>Utilidad Bruta</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-emerald-400 transition-colors">
+                                    <input type="checkbox" id="metric-utilidad-admin" class="w-3.5 h-3.5 bg-slate-800 border border-slate-600 rounded focus:ring-0 focus:ring-offset-0 text-emerald-500">
+                                    <span>Utilidad Administrativa</span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -216,7 +309,7 @@
                             <thead>
                                 <tr>
                                     <th>📗 Folio Venta</th>
-                                    <th>Fecha Ef-Venta</th>
+                                    <th>📅Fecha Venta</th>
                                     <th>Total Venta (Ingreso)</th>
                                     <th>Costo Calc. (Egresos)</th>
                                     <th>Utilidad Bruta</th>
@@ -286,7 +379,7 @@
                             <thead>
                                 <tr>
                                     <th>📘 Folio Recepción</th>
-                                    <th>Fecha</th>
+                                    <th>📅Fecha Recepción</th>
                                     <th>1️⃣ Tipo Solicitud</th>
                                     <th>®️ Marca / 📱 Modelo</th>
                                     <th>⚙️ Tipo Servicio</th>
@@ -335,7 +428,7 @@
                             <thead>
                                 <tr>
                                     <th>📒 Folio Anticipo</th>
-                                    <th>Fecha</th>
+                                    <th>📅Fecha Anticipo</th>
                                     <th>Monto</th>
                                     <th>📘 Ref Recepción</th>
                                     <th>Dispositivo (Ref)</th>
@@ -563,6 +656,249 @@
             renderAll();
         }
 
+        // --- ADVANCED FILTERS LOGIC ---
+        
+        // Toggle month selector visibility
+        document.addEventListener('DOMContentLoaded', () => {
+            const periodoSelect = document.getElementById('filter-periodo');
+            const selectorMesAno = document.getElementById('selector-mes-ano');
+            const inputMesAno = document.getElementById('input-mes-ano');
+            
+            // Set default month to current month
+            const now = new Date();
+            inputMesAno.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            periodoSelect.addEventListener('change', () => {
+                if (periodoSelect.value === 'elegir-mes') {
+                    selectorMesAno.classList.remove('hidden');
+                } else {
+                    selectorMesAno.classList.add('hidden');
+                }
+                updateAgregacionOptions();
+            });
+            
+            // Comparison checkboxes logic
+            const compCheckboxes = document.querySelectorAll('.comparison-checkbox');
+            compCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', handleComparisonChange);
+            });
+            
+            function handleComparisonChange(e) {
+                const sinComparar = document.getElementById('comp-sin-comparar');
+                if (e.target.id === 'comp-sin-comparar' && e.target.checked) {
+                    compCheckboxes.forEach(cb => {
+                        if (cb.id !== 'comp-sin-comparar') cb.checked = false;
+                    });
+                } else if (e.target.id !== 'comp-sin-comparar' && e.target.checked) {
+                    sinComparar.checked = false;
+                }
+            }
+            
+            function updateAgregacionOptions() {
+                const periodo = periodoSelect.value;
+                const agregacionSelect = document.getElementById('filter-agregacion');
+                const currentValue = agregacionSelect.value;
+                
+                // Build options array
+                const options = [
+                    '<option value="por-folio">Por Folio</option>',
+                    '<option value="por-dia">Por Día</option>'
+                ];
+                
+                // Por Semana - solo para período mensual o mayor
+                if (['este-mes', 'elegir-mes', 'este-bimestre', 'este-trimestre', 'este-semestre', 'este-ano'].includes(periodo)) {
+                    options.push('<option value="por-semana">Por Semana</option>');
+                }
+                
+                // Por Mes - solo para período de año
+                if (periodo === 'este-ano') {
+                    options.push('<option value="por-mes">Por Mes</option>');
+                }
+                
+                // Set all options at once
+                agregacionSelect.innerHTML = options.join('');
+                
+                // Restore previous value if still available
+                if (Array.from(agregacionSelect.options).some(opt => opt.value === currentValue)) {
+                    agregacionSelect.value = currentValue;
+                }
+            }
+            
+            updateAgregacionOptions();
+        });
+        
+        // Date range calculation helpers
+        function getPeriodDates(periodo, customMonth = null) {
+            const now = new Date();
+            let startDate, endDate;
+            
+            switch(periodo) {
+                case 'este-mes':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    break;
+                case 'elegir-mes':
+                    if (customMonth) {
+                        const [year, month] = customMonth.split('-');
+                        startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+                        endDate = new Date(parseInt(year), parseInt(month), 0);
+                    } else {
+                        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    }
+                    break;
+                case 'este-bimestre':
+                    const bimestreStart = Math.floor(now.getMonth() / 2) * 2;
+                    startDate = new Date(now.getFullYear(), bimestreStart, 1);
+                    endDate = new Date(now.getFullYear(), bimestreStart + 2, 0);
+                    break;
+                case 'este-trimestre':
+                    const trimestreStart = Math.floor(now.getMonth() / 3) * 3;
+                    startDate = new Date(now.getFullYear(), trimestreStart, 1);
+                    endDate = new Date(now.getFullYear(), trimestreStart + 3, 0);
+                    break;
+                case 'este-semestre':
+                    const semestreStart = now.getMonth() < 6 ? 0 : 6;
+                    startDate = new Date(now.getFullYear(), semestreStart, 1);
+                    endDate = new Date(now.getFullYear(), semestreStart + 6, 0);
+                    break;
+                case 'este-ano':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    endDate = new Date(now.getFullYear(), 12, 0);
+                    break;
+                default:
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            }
+            
+            return { startDate, endDate };
+        }
+        
+        function getComparisonPeriods() {
+            const periodo = document.getElementById('filter-periodo').value;
+            const customMonth = document.getElementById('input-mes-ano').value;
+            const { startDate, endDate } = getPeriodDates(periodo, customMonth);
+            
+            const periods = [{ startDate, endDate, label: 'Actual' }];
+            
+            if (document.getElementById('comp-periodo-anterior').checked) {
+                const duration = endDate - startDate;
+                const prevEnd = new Date(startDate.getTime() - 1);
+                const prevStart = new Date(prevEnd.getTime() - duration + 1);
+                periods.push({ startDate: prevStart, endDate: prevEnd, label: 'Período Anterior' });
+            }
+            
+            if (document.getElementById('comp-segundo-anterior').checked) {
+                const duration = endDate - startDate;
+                const prevEnd = new Date(startDate.getTime() - 1);
+                const prev2End = new Date(prevEnd.getTime() - duration);
+                const prev2Start = new Date(prev2End.getTime() - duration + 1);
+                periods.push({ startDate: prev2Start, endDate: prev2End, label: 'Segundo Período Anterior' });
+            }
+            
+            if (document.getElementById('comp-ano-anterior').checked) {
+                const prevYearStart = new Date(startDate);
+                prevYearStart.setFullYear(prevYearStart.getFullYear() - 1);
+                const prevYearEnd = new Date(endDate);
+                prevYearEnd.setFullYear(prevYearEnd.getFullYear() - 1);
+                periods.push({ startDate: prevYearStart, endDate: prevYearEnd, label: 'Año Anterior' });
+            }
+            
+            return periods;
+        }
+        
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            // Try different date formats
+            let date = new Date(dateStr);
+            if (isNaN(date)) {
+                // Try dd/mm/yyyy format
+                const parts = dateStr.split('/');
+                if (parts.length === 3 && parts.every(p => p && !isNaN(p) && p.length > 0)) {
+                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+            return isNaN(date) ? null : date;
+        }
+        
+        function filterDataByPeriod(data, startDate, endDate) {
+            return data.filter(item => {
+                const itemDate = parseDate(item.fecha);
+                if (!itemDate) return false;
+                return itemDate >= startDate && itemDate <= endDate;
+            });
+        }
+        
+        function aggregateData(data, agregacion, startDate, endDate) {
+            if (agregacion === 'por-folio') {
+                return data; // No aggregation needed
+            }
+            
+            const groups = {};
+            
+            data.forEach(item => {
+                const itemDate = parseDate(item.fecha);
+                if (!itemDate) return;
+                
+                let key;
+                switch(agregacion) {
+                    case 'por-dia':
+                        key = itemDate.toISOString().split('T')[0];
+                        break;
+                    case 'por-semana':
+                        const weekNum = getWeekNumber(itemDate);
+                        key = `${itemDate.getFullYear()}-W${weekNum}`;
+                        break;
+                    case 'por-mes':
+                        key = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
+                        break;
+                    default:
+                        key = itemDate.toISOString().split('T')[0];
+                }
+                
+                if (!groups[key]) {
+                    groups[key] = {
+                        fecha: key,
+                        ingreso: 0,
+                        flujo: 0,
+                        costo: 0,
+                        count: 0,
+                        items: []
+                    };
+                }
+                
+                groups[key].ingreso += item.ingreso || 0;
+                groups[key].flujo += cleanMoney(item['Total Pagos'] || 0);
+                groups[key].costo += item.costo || 0;
+                groups[key].count += 1;
+                groups[key].items.push(item);
+            });
+            
+            return Object.values(groups);
+        }
+        
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
+        
+        function calculateMetrics(data, egresos, fixedCosts = 0) {
+            const ingreso = data.reduce((s, v) => s + (v.ingreso || 0), 0);
+            const flujo = data.reduce((s, v) => s + (cleanMoney(v['Total Pagos']) || 0), 0);
+            const costoVentas = data.reduce((s, v) => s + (v.costo || 0), 0);
+            
+            // Calculate gastos from the period
+            const gastos = egresos.filter(e => e.tipo === 'Gasto/Pago').reduce((s, e) => s + e.monto, 0);
+            
+            const utilidadBruta = ingreso - costoVentas;
+            const utilidadAdmin = utilidadBruta - gastos - fixedCosts;
+            
+            return { ingreso, flujo, costoVentas, gastos, utilidadBruta, utilidadAdmin };
+        }
+
         // --- RENDERIZADO DE INTERFAZ ---
         function renderAll() {
             renderVentas();
@@ -575,12 +911,49 @@
         function renderVentas() {
             const validezFilter = document.getElementById('filter-ventas-validez')?.value || 'Válido';
             const fixedCosts = parseFloat(document.getElementById('fixed-costs-input')?.value || 0);
-            const filtered = GLOBAL_DATA.ventas.filter(v => validezFilter === 'ALL' || v.validez === validezFilter);
-
-            const totalVenta = filtered.reduce((s, v) => s + v.ingreso, 0);
-            const totalCostoVar = filtered.reduce((s, v) => s + v.costo, 0);
-            const utilidadOperativa = totalVenta - totalCostoVar - fixedCosts;
-
+            
+            // Get period and aggregation settings
+            const periodo = document.getElementById('filter-periodo')?.value || 'este-mes';
+            const agregacion = document.getElementById('filter-agregacion')?.value || 'por-folio';
+            const customMonth = document.getElementById('input-mes-ano')?.value;
+            
+            // Get comparison periods
+            const periods = getComparisonPeriods();
+            const hasComparison = periods.length > 1;
+            
+            // Get selected metrics
+            const showIngreso = document.getElementById('metric-ingreso')?.checked;
+            const showFlujo = document.getElementById('metric-flujo')?.checked;
+            const showCostoVentas = document.getElementById('metric-costo-ventas')?.checked;
+            const showGastos = document.getElementById('metric-gastos')?.checked;
+            const showUtilidadBruta = document.getElementById('metric-utilidad-bruta')?.checked;
+            const showUtilidadAdmin = document.getElementById('metric-utilidad-admin')?.checked;
+            
+            // Filter by validez
+            const allVentas = GLOBAL_DATA.ventas.filter(v => validezFilter === 'ALL' || v.validez === validezFilter);
+            
+            // Process each period
+            const periodData = periods.map(period => {
+                const filtered = filterDataByPeriod(allVentas, period.startDate, period.endDate);
+                const egresos = filterDataByPeriod(GLOBAL_DATA.egresos, period.startDate, period.endDate);
+                const aggregated = aggregateData(filtered, agregacion, period.startDate, period.endDate);
+                const metrics = calculateMetrics(filtered, egresos, fixedCosts);
+                
+                return {
+                    label: period.label,
+                    data: aggregated,
+                    filtered: filtered,
+                    egresos: egresos,
+                    metrics: metrics
+                };
+            });
+            
+            const currentPeriod = periodData[0];
+            const totalVenta = currentPeriod.metrics.ingreso;
+            const totalCostoVar = currentPeriod.metrics.costoVentas;
+            const utilidadOperativa = currentPeriod.metrics.utilidadAdmin;
+            
+            // Update KPIs
             const kpiTotal = document.getElementById('kpi-ventas-total');
             const kpiUtil = document.getElementById('kpi-ventas-utilidad');
             if(kpiTotal) kpiTotal.textContent = formatMoney(totalVenta);
@@ -589,33 +962,24 @@
                 kpiUtil.className = utilidadOperativa >= 0 ? "text-white font-bold kpi-value text-xl" : "text-red-500 font-bold kpi-value text-xl";
             }
 
-            // Gráfica Simplificada CSS
-            const maxVal = Math.max(totalVenta, totalCostoVar + fixedCosts) * 1.1 || 100;
-            const hIngreso = (totalVenta / maxVal) * 100;
-            const hCosto = (totalCostoVar / maxVal) * 100;
-            const hFijo = (fixedCosts / maxVal) * 100;
-
-            const chartHTML = `
-                <div class="relative w-full h-full p-6 flex items-end justify-center gap-12">
-                    <div class="w-24 flex flex-col items-center group relative cursor-pointer">
-                        <div class="w-full bg-red-600/80 rounded-t-sm shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-1000 border-x border-t border-red-400/30" style="height: ${hFijo}%"></div>
-                        <div class="w-full bg-blue-600/80 border-t border-white/20 transition-all duration-1000 shadow-[0_0_15px_rgba(37,99,235,0.4)]" style="height: ${hCosto}%"></div>
-                        <p class="mt-3 text-[10px] uppercase font-bold text-gray-400 tracking-widest">COSTOS</p>
-                        <div class="absolute -bottom-6 text-xs font-bold text-red-400">${formatMoney(fixedCosts+totalCostoVar)}</div>
-                    </div>
-                    <div class="w-24 flex flex-col items-center group relative cursor-pointer">
-                        <div class="w-full bg-emerald-500/80 rounded-t-sm shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all duration-1000 border-x border-t border-emerald-400/30" style="height: ${hIngreso}%"></div>
-                        <p class="mt-3 text-[10px] uppercase font-bold text-gray-400 tracking-widest">INGRESOS</p>
-                        <div class="absolute -bottom-6 text-xs font-bold text-emerald-400">${formatMoney(totalVenta)}</div>
-                    </div>
-                </div>
-            `;
+            // Build chart HTML
+            let chartHTML = '';
+            
+            if (hasComparison || agregacion !== 'por-folio') {
+                // Multi-period or aggregated view - line/bar chart
+                chartHTML = buildComparisonChart(periodData, showIngreso, showFlujo, showCostoVentas, showGastos, showUtilidadBruta, showUtilidadAdmin);
+            } else {
+                // Single period, no aggregation - show profit/loss visualization
+                chartHTML = buildProfitLossChart(totalVenta, totalCostoVar, currentPeriod.metrics.gastos, fixedCosts, utilidadOperativa);
+            }
+            
             document.getElementById('chart-ventas-main').innerHTML = chartHTML;
-
+            
             renderMiniCharts('charts-ventas-dynamic', ['Total Venta', 'Total Pagos', 'Dispositivo', 'Marca'], 'emerald');
 
+            // Update table with current period data
             const tbody = document.querySelector('#table-ventas tbody');
-            tbody.innerHTML = filtered.slice(0, 100).map(v => `
+            tbody.innerHTML = currentPeriod.filtered.slice(0, 100).map(v => `
                 <tr>
                     <td class="text-emerald-400 font-bold">${v.folio || '-'}</td>
                     <td>${formatDate(v.fecha)}</td>
@@ -626,6 +990,101 @@
                     <td class="text-gray-300 text-[10px]">${v.dispositivo_ref}</td>
                 </tr>
             `).join('');
+        }
+        
+        function buildProfitLossChart(totalVenta, totalCostoVar, gastos, fixedCosts, utilidadOperativa) {
+            const maxVal = Math.max(totalVenta, totalCostoVar + gastos + fixedCosts) * 1.1 || 100;
+            const hIngreso = (totalVenta / maxVal) * 100;
+            const hCostoVar = (totalCostoVar / maxVal) * 100;
+            const hGastos = (gastos / maxVal) * 100;
+            const hFijo = (fixedCosts / maxVal) * 100;
+            
+            // Determine if profit or loss
+            const isProfitable = utilidadOperativa >= 0;
+            const ingresoBarClass = isProfitable ? 'bg-emerald-500/80 border-emerald-400/30' : 'bg-red-500/80 border-red-400/30';
+            const ingresoShadow = isProfitable ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)';
+            const ingresoTextClass = isProfitable ? 'text-emerald-400' : 'text-red-400';
+            const utilidadBorderClass = isProfitable ? 'border-emerald-500/30' : 'border-red-500/30';
+            
+            return `
+                <div class="relative w-full h-full p-6 flex items-end justify-center gap-12">
+                    <div class="w-32 flex flex-col items-center group relative cursor-pointer">
+                        <div class="w-full bg-red-600/80 rounded-t-sm shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-1000 border-x border-t border-red-400/30" style="height: ${hFijo}%"></div>
+                        <div class="w-full bg-orange-600/80 border-t border-white/20 transition-all duration-1000 shadow-[0_0_15px_rgba(234,88,12,0.4)]" style="height: ${hGastos}%"></div>
+                        <div class="w-full bg-blue-600/80 border-t border-white/20 transition-all duration-1000 shadow-[0_0_15px_rgba(37,99,235,0.4)]" style="height: ${hCostoVar}%"></div>
+                        <p class="mt-3 text-[10px] uppercase font-bold text-gray-400 tracking-widest">COSTOS</p>
+                        <div class="absolute -bottom-6 text-xs font-bold text-red-400">${formatMoney(fixedCosts + gastos + totalCostoVar)}</div>
+                    </div>
+                    <div class="w-32 flex flex-col items-center group relative cursor-pointer">
+                        <div class="w-full ${ingresoBarClass} rounded-t-sm shadow-[0_0_15px_${ingresoShadow}] transition-all duration-1000 border-x border-t" style="height: ${hIngreso}%"></div>
+                        <p class="mt-3 text-[10px] uppercase font-bold text-gray-400 tracking-widest">INGRESOS</p>
+                        <div class="absolute -bottom-6 text-xs font-bold ${ingresoTextClass}">${formatMoney(totalVenta)}</div>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-slate-900/80 border ${utilidadBorderClass} rounded-lg px-3 py-2">
+                        <p class="text-[9px] text-gray-400 uppercase tracking-wider">Utilidad ${isProfitable ? '✅' : '⚠️'}</p>
+                        <p class="text-lg font-bold ${ingresoTextClass} font-cyber">${formatMoney(utilidadOperativa)}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Color mapping for metrics chart (constant)
+        const METRIC_COLOR_CLASSES = {
+            emerald: { bg: 'bg-emerald-500/70', border: 'border-emerald-400/30', text: 'text-emerald-400' },
+            cyan: { bg: 'bg-cyan-500/70', border: 'border-cyan-400/30', text: 'text-cyan-400' },
+            blue: { bg: 'bg-blue-500/70', border: 'border-blue-400/30', text: 'text-blue-400' },
+            orange: { bg: 'bg-orange-500/70', border: 'border-orange-400/30', text: 'text-orange-400' },
+            green: { bg: 'bg-green-500/70', border: 'border-green-400/30', text: 'text-green-400' },
+            red: { bg: 'bg-red-500/70', border: 'border-red-400/30', text: 'text-red-400' }
+        };
+        
+        function buildComparisonChart(periodData, showIngreso, showFlujo, showCostoVentas, showGastos, showUtilidadBruta, showUtilidadAdmin) {
+            // Simple bar comparison chart
+            const maxMetric = Math.max(...periodData.map(p => {
+                return Math.max(
+                    showIngreso ? p.metrics.ingreso : 0,
+                    showFlujo ? p.metrics.flujo : 0,
+                    showCostoVentas ? p.metrics.costoVentas : 0,
+                    showGastos ? p.metrics.gastos : 0,
+                    Math.abs(showUtilidadBruta ? p.metrics.utilidadBruta : 0),
+                    Math.abs(showUtilidadAdmin ? p.metrics.utilidadAdmin : 0)
+                );
+            })) * 1.1 || 100;
+            
+            const bars = periodData.map(period => {
+                const metrics = [];
+                if (showIngreso) metrics.push({ label: 'Ingreso', value: period.metrics.ingreso, color: 'emerald' });
+                if (showFlujo) metrics.push({ label: 'Flujo', value: period.metrics.flujo, color: 'cyan' });
+                if (showCostoVentas) metrics.push({ label: 'Costo Ventas', value: period.metrics.costoVentas, color: 'blue' });
+                if (showGastos) metrics.push({ label: 'Gastos', value: period.metrics.gastos, color: 'orange' });
+                if (showUtilidadBruta) metrics.push({ label: 'Util. Bruta', value: period.metrics.utilidadBruta, color: period.metrics.utilidadBruta >= 0 ? 'green' : 'red' });
+                if (showUtilidadAdmin) metrics.push({ label: 'Util. Admin', value: period.metrics.utilidadAdmin, color: period.metrics.utilidadAdmin >= 0 ? 'green' : 'red' });
+                
+                const barsHTML = metrics.map(m => {
+                    const height = (Math.abs(m.value) / maxMetric) * 100;
+                    const classes = METRIC_COLOR_CLASSES[m.color];
+                    return `
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 ${classes.bg} rounded-t shadow-sm border ${classes.border}" style="height: ${height}%"></div>
+                            <p class="text-[8px] text-gray-400 mt-1 text-center">${m.label}</p>
+                            <p class="text-[9px] font-bold ${classes.text}">${formatMoney(m.value)}</p>
+                        </div>
+                    `;
+                }).join('');
+                
+                return `
+                    <div class="flex flex-col items-center gap-2">
+                        <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">${period.label}</p>
+                        <div class="flex items-end gap-2 h-48">${barsHTML}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            return `
+                <div class="relative w-full h-full p-6 flex items-center justify-center gap-8 overflow-x-auto">
+                    ${bars}
+                </div>
+            `;
         }
 
         function renderRecepcion() {
